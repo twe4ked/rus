@@ -1,4 +1,5 @@
 require 'socket'
+require 'rus/response_builder'
 
 module Rus
   class Server
@@ -37,36 +38,13 @@ module Rus
 
       status, headers, body = app.call({})
 
-      body = format_body(body)
-
-      headers['Content-Length'] = body.bytesize
-      headers['Connection'] = 'close'
-
-      response = [
-        format_status(status),
-        format_headers(headers),
-        body
-      ].join("\n")
+      response = ResponseBuilder.call(status, headers, body)
 
       log response.chomp
 
       client_socket.print response
 
       client_socket.close
-    end
-
-    def format_status(status)
-      "HTTP/1.0 #{status} OK"
-    end
-
-    def format_headers(headers)
-      headers.inject('') { |acc, (k,v)| acc << "#{k}: #{v}\n" }
-    end
-
-    def format_body(body)
-      acc = ''
-      body.each { |v| acc << v }
-      acc
     end
 
     def socket
