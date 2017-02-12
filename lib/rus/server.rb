@@ -2,8 +2,14 @@ require 'socket'
 
 module Rus
   class Server
-    def self.call
-      new.call
+    attr_reader :app
+
+    def self.call(*args)
+      new.call(*args)
+    end
+
+    def initialize(app)
+      @app = app
     end
 
     def call
@@ -28,16 +34,6 @@ module Rus
 
       log
       log request
-
-      app = -> (env) {
-        [
-          200,
-          {
-            'Content-Type' => 'text/plain',
-          },
-          ["Hello World!\n"],
-        ]
-      }
 
       status, headers, body = app.call({})
 
