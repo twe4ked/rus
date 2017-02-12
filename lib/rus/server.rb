@@ -32,6 +32,12 @@ module Rus
     def accept
       client_socket, client_addrinfo = socket.accept
 
+      handle_request(client_socket)
+
+      client_socket.close
+    end
+
+    def handle_request(client_socket)
       request = client_socket.recv 1056
       log
       log request
@@ -41,8 +47,6 @@ module Rus
       response = ResponseBuilder.call(status, headers, body)
       log response.chomp
       client_socket.print response
-
-      client_socket.close
     end
 
     def socket
