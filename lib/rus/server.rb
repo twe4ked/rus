@@ -31,17 +31,15 @@ module Rus
 
     def accept
       client_socket, client_addrinfo = socket.accept
-      request = client_socket.recv 1056
 
+      request = client_socket.recv 1056
       log
       log request
 
       status, headers, body = app.call({})
 
       response = ResponseBuilder.call(status, headers, body)
-
       log response.chomp
-
       client_socket.print response
 
       client_socket.close
