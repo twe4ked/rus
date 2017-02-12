@@ -29,22 +29,48 @@ module Rus
       log
       log request
 
-      data = "Hello World!\n"
+      app = -> (env) {
+        [
+          200,
+          {
+            'Content-Type' => 'text/plain',
+          },
+          ["Hello World!\n"],
+        ]
+      }
 
-      response = <<-EOF
-HTTP/1.0 200 OK
-Content-Type: text/plain
-Content-Length: #{data.bytesize}
-Connection: close
+      status, headers, body = app.call({})
 
-#{data}
-      EOF
+      body = format_body(body)
+
+      headers['Content-Length'] = body.bytesize
+      headers['Connection'] = 'close'
+
+      response = [
+        format_status(status),
+        format_headers(headers),
+        body
+      ].join("\n")
 
       log response.chomp
 
       client_socket.print response
 
       client_socket.close
+    end
+
+    def format_status(status)
+      "HTTP/1.0 #{status} OK"
+    end
+
+    def format_headers(headers)
+      headers.inject('') { |acc, (k,v)| acc << "#{k}: #{v}\n" }
+    end
+
+    def format_body(body)
+      acc = ''
+      body.each { |v| acc << v }
+      acc
     end
 
     def socket
