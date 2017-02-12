@@ -7,9 +7,6 @@ module Rus
     def call(status, headers, body)
       body = format_body(body)
 
-      headers['Content-Length'] = body.bytesize
-      headers['Connection'] = 'close'
-
       [
         format_status(status),
         format_headers(headers),
