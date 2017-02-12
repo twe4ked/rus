@@ -2,11 +2,11 @@ require 'socket'
 
 module Rus
   class Server
-    def self.run
-      new.run
+    def self.call
+      new.call
     end
 
-    def run
+    def call
       Signal.trap('INT') do
         socket.close
         puts
